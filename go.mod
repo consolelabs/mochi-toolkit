@@ -3,8 +3,10 @@ module github.com/consolelabs/mochi-toolkit
 go 1.20
 
 require (
-	github.com/consolelabs/mochi-typeset v0.0.0-20230707041250-dab56032e416
+	github.com/confluentinc/confluent-kafka-go v1.9.2
+	github.com/consolelabs/mochi-typeset v0.0.0-20230707084109-3f5bb68d0f53
 	github.com/gin-gonic/gin v1.9.1
+	github.com/sirupsen/logrus v1.9.3
 )
 
 require (
