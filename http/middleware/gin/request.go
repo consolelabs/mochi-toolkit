@@ -5,11 +5,12 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/consolelabs/mochi-typeset/queue/audit-log/typeset"
 	"github.com/gin-gonic/gin"
+
+	"github.com/consolelabs/mochi-typeset/queue/audit-log/typeset"
 )
 
-func CaptureRequest(c *gin.Context) typeset.AuditLogApi {
+func CaptureRequest(c *gin.Context) typeset.AuditLogMessage {
 	start := time.Now()
 	var body []byte
 	if c.Request.Method == "POST" || c.Request.Method == "PUT" {
@@ -23,13 +24,16 @@ func CaptureRequest(c *gin.Context) typeset.AuditLogApi {
 	c.Writer = w
 	c.Next()
 
-	return typeset.AuditLogApi{
-		Method:       c.Request.Method,
-		Uri:          c.Request.URL.String(),
-		RequestBody:  body,
-		StatusCode:   c.Writer.Status(),
-		Latency:      time.Since(start),
-		RequestId:    c.Request.Header.Get("X-Request-Id"),
-		ResponseBody: w.body.Bytes(),
+	return typeset.AuditLogMessage{
+		Type: typeset.AUDIT_LOG_MESSAGE_TYPE_API,
+		ApiLog: &typeset.AuditLogApi{
+			Method:       c.Request.Method,
+			Uri:          c.Request.URL.String(),
+			RequestBody:  body,
+			StatusCode:   c.Writer.Status(),
+			Latency:      time.Since(start),
+			RequestId:    c.Request.Header.Get("X-Request-Id"),
+			ResponseBody: w.body.Bytes(),
+		},
 	}
 }
