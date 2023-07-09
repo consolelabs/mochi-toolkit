@@ -24,7 +24,7 @@ import (
 
 func New(serviceName string) *logrus.Entry {
 	l := logrus.WithFields(logrus.Fields{
-		"app": "serviceName",
+		"app": serviceName,
 	})
 	l.Logger.SetFormatter(&logrus.JSONFormatter{})
 	l.Level = logrus.InfoLevel
