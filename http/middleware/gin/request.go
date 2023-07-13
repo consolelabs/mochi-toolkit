@@ -5,12 +5,24 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/gin-gonic/gin"
-
 	"github.com/consolelabs/mochi-typeset/queue/audit-log/typeset"
+	"github.com/gin-gonic/gin"
 )
 
-func CaptureRequest(c *gin.Context) typeset.AuditLogMessage {
+type CaptureRequestOptions struct {
+	// exclude paths from capture
+	ExcludePaths []string
+}
+
+func CaptureRequest(c *gin.Context, opts *CaptureRequestOptions) *typeset.AuditLogMessage {
+	// check if path is excluded
+	for _, path := range opts.ExcludePaths {
+		if c.Request.URL.Path == path {
+			c.Next()
+			return nil
+		}
+	}
+
 	start := time.Now()
 	var body []byte
 	if c.Request.Method == "POST" || c.Request.Method == "PUT" {
@@ -24,7 +36,7 @@ func CaptureRequest(c *gin.Context) typeset.AuditLogMessage {
 	c.Writer = w
 	c.Next()
 
-	return typeset.AuditLogMessage{
+	return &typeset.AuditLogMessage{
 		Type: typeset.AUDIT_LOG_MESSAGE_TYPE_API,
 		ApiLog: &typeset.AuditLogApi{
 			Method:       c.Request.Method,
