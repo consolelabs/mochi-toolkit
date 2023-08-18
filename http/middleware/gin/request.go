@@ -3,6 +3,7 @@ package gin
 import (
 	"bytes"
 	"io/ioutil"
+	"net/http"
 	"time"
 
 	"github.com/consolelabs/mochi-typeset/queue/audit-log/typeset"
@@ -12,6 +13,11 @@ import (
 type CaptureRequestOptions struct {
 	// exclude paths from capture
 	ExcludePaths []string
+}
+
+type MiddlewareOption struct {
+	PrivateIP     bool
+	WhitelistPath []string
 }
 
 func CaptureRequest(c *gin.Context, opts *CaptureRequestOptions) *typeset.AuditLogMessage {
@@ -47,5 +53,32 @@ func CaptureRequest(c *gin.Context, opts *CaptureRequestOptions) *typeset.AuditL
 			RequestId:    c.Request.Header.Get("X-Request-Id"),
 			ResponseBody: w.body.Bytes(),
 		},
+	}
+}
+
+func WithAuth(opts *MiddlewareOption) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if opts == nil {
+			c.Next()
+			return
+		}
+		// check whitelist path
+		for _, pApi := range opts.WhitelistPath {
+			if validatePublicApi(c.Request.URL.RequestURI(), pApi) {
+				c.Next()
+				return
+			}
+		}
+
+		// check Private IP
+		if opts.PrivateIP && !isPrivateIP(c.ClientIP()) {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+				"status":  http.StatusForbidden,
+				"message": "Permission denied",
+			})
+			return
+		}
+
+		c.Next()
 	}
 }
