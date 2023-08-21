@@ -11,6 +11,13 @@ var (
 		PlatformApp:      "app:",
 		PlatformMochi:    "mochi:",
 	}
+
+	usernameEmoji = map[string]string{
+		PlatformDiscord:  "👾",
+		PlatformTelegram: "🔹",
+		PlatformApp:      "🔌",
+		PlatformMochi:    "🍡",
+	}
 )
 
 func Account(platform string, profileA, profileB MochiProfile) (*MochiProfileAccount, *MochiProfileAccount) {
@@ -84,12 +91,12 @@ func Account(platform string, profileA, profileB MochiProfile) (*MochiProfileAcc
 	return nil, nil
 }
 
-func Prefix(platform, accountPlatform string) string {
+func prefix(platform, accountPlatform string) string {
 	if platform == accountPlatform {
 		return "@"
 	}
 
-	return usernamePrefix[accountPlatform]
+	return usernameEmoji[accountPlatform] + usernamePrefix[accountPlatform]
 }
 
 func FallbackUsernamePrefix(aProfileA *MochiProfileAccount, profileA *MochiProfile, platform string) (string, string) {
@@ -97,5 +104,5 @@ func FallbackUsernamePrefix(aProfileA *MochiProfileAccount, profileA *MochiProfi
 		return profileA.ProfileId, "@"
 	}
 
-	return aProfileA.PlatformMetadata["username"].(string), Prefix(platform, aProfileA.Platform)
+	return aProfileA.PlatformMetadata["username"].(string), prefix(platform, aProfileA.Platform)
 }
