@@ -36,7 +36,7 @@ func getFirstDigitAfterDecimal(num float64) string {
 	return strings.ToLower(digits)
 }
 
-func formatNumberDecimal(number float64) string {
+func FormatNumberDecimal(number float64) string {
 	if number < 1000 && number >= 1 {
 		return fmt.Sprintf("%.2f", number)
 	}
@@ -49,7 +49,7 @@ func formatNumberDecimal(number float64) string {
 func FormatTokenAmount(tokenAmount string, tokenDecimal int) string {
 	amount := ConvertBigIntString(tokenAmount, tokenDecimal)
 	amountFloat, _ := amount.Float64()
-	return formatNumberDecimal(amountFloat)
+	return FormatNumberDecimal(amountFloat)
 }
 
 func ConvertBigIntString(amount string, decimal int) *big.Float {
