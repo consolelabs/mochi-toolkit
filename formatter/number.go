@@ -11,7 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 )
 
-func GetFirstDigitAfterDecimal(num float64) string {
+func getFirstDigitAfterDecimal(num float64) string {
 	str := strconv.FormatFloat(num, 'f', -1, 64)
 
 	// Split the string into two parts: the integer part and the decimal part
@@ -36,12 +36,12 @@ func GetFirstDigitAfterDecimal(num float64) string {
 	return strings.ToLower(digits)
 }
 
-func FormatNumberDecimal(number float64) string {
+func formatNumberDecimal(number float64) string {
 	if number < 1000 && number >= 1 {
 		return fmt.Sprintf("%.2f", number)
 	}
 	if number < 1 {
-		return GetFirstDigitAfterDecimal(number)
+		return getFirstDigitAfterDecimal(number)
 	}
 	return fmt.Sprintf("%.0f", number)
 }
@@ -49,7 +49,7 @@ func FormatNumberDecimal(number float64) string {
 func FormatTokenAmount(tokenAmount string, tokenDecimal int) string {
 	amount := ConvertBigIntString(tokenAmount, tokenDecimal)
 	amountFloat, _ := amount.Float64()
-	return FormatNumberDecimal(amountFloat)
+	return formatNumberDecimal(amountFloat)
 }
 
 func ConvertBigIntString(amount string, decimal int) *big.Float {
