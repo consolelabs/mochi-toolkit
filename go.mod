@@ -6,6 +6,7 @@ require (
 	github.com/TV4/logrus-stackdriver-formatter v0.1.0
 	github.com/confluentinc/confluent-kafka-go v1.9.2
 	github.com/consolelabs/mochi-typeset v0.0.0-20230707094334-3ae38b3d7a34
+	github.com/ethereum/go-ethereum v1.12.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/joho/godotenv v1.5.1
 	github.com/sirupsen/logrus v1.9.3
