@@ -8,6 +8,7 @@ import (
 
 	"github.com/consolelabs/mochi-typeset/queue/audit-log/typeset"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 type CaptureRequestOptions struct {
@@ -18,6 +19,7 @@ type CaptureRequestOptions struct {
 type MiddlewareOption struct {
 	PrivateIP     bool
 	WhitelistPath []string
+	DebugMode     bool
 }
 
 func CaptureRequest(c *gin.Context, opts *CaptureRequestOptions) *typeset.AuditLogMessage {
@@ -58,10 +60,22 @@ func CaptureRequest(c *gin.Context, opts *CaptureRequestOptions) *typeset.AuditL
 
 func WithAuth(opts *MiddlewareOption) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		logger := logrus.WithFields(logrus.Fields{
+			"component": "gin",
+		})
+
 		if opts == nil {
 			c.Next()
 			return
 		}
+
+		// check Debug mode
+		if opts.DebugMode {
+			logger.WithFields(logrus.Fields{"Client Ip": c.ClientIP(), "Request": c.Request}).Info("process request")
+			c.Next()
+			return
+		}
+
 		// check whitelist path
 		for _, pApi := range opts.WhitelistPath {
 			if validatePublicApi(c.Request.URL.RequestURI(), pApi) {

@@ -25,6 +25,7 @@ func TestWithAuth(t *testing.T) {
 			&MiddlewareOption{
 				PrivateIP:     false,
 				WhitelistPath: []string{},
+				DebugMode:     false,
 			},
 			http.StatusOK,
 		},
@@ -35,6 +36,7 @@ func TestWithAuth(t *testing.T) {
 			&MiddlewareOption{
 				PrivateIP:     true,
 				WhitelistPath: []string{"/api/v1/:id/transaction"},
+				DebugMode:     false,
 			},
 			http.StatusOK,
 		},
@@ -45,6 +47,7 @@ func TestWithAuth(t *testing.T) {
 			&MiddlewareOption{
 				PrivateIP:     true,
 				WhitelistPath: []string{"/api/v1/:id/transaction"},
+				DebugMode:     false,
 			},
 			http.StatusOK,
 		},
@@ -55,6 +58,7 @@ func TestWithAuth(t *testing.T) {
 			&MiddlewareOption{
 				PrivateIP:     true,
 				WhitelistPath: []string{},
+				DebugMode:     false,
 			},
 			http.StatusForbidden,
 		},
@@ -65,6 +69,18 @@ func TestWithAuth(t *testing.T) {
 			&MiddlewareOption{
 				PrivateIP:     true,
 				WhitelistPath: []string{},
+				DebugMode:     false,
+			},
+			http.StatusOK,
+		},
+		{
+			"51.0.0.8",
+			"/api/v1/1111/transaction",
+			"/api/v1/1111/transaction",
+			&MiddlewareOption{
+				PrivateIP:     true,
+				WhitelistPath: []string{},
+				DebugMode:     true,
 			},
 			http.StatusOK,
 		},
