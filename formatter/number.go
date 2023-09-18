@@ -112,3 +112,175 @@ func Cmp(x, y string) (int, error) {
 	}
 	return n1.Cmp(n2), nil
 }
+
+func FormatUsdDigit(value float64) string {
+	tooSmall := math.Abs(value) <= 0.01
+
+	if tooSmall {
+		return "$0.01"
+	}
+
+	sign := ""
+	if value < 0 {
+		sign = "-"
+	}
+
+	fractionDigit := 0
+	if value < 100 {
+		fractionDigit = 2
+	}
+	params := FormatParam{
+		Value:            strconv.FormatFloat(math.Abs(value), 'f', -1, 64),
+		FractionDigits:   fractionDigit,
+		ScientificFormat: true,
+		Shorten:          math.Abs(value) >= 100,
+	}
+
+	num := formatDigit(params)
+
+	return fmt.Sprintf("%s$%s", sign, num)
+}
+
+func FormatUsdPriceDigit(value float64) string {
+	fractionDigit := 0
+	if value < 100 {
+		fractionDigit = 2
+	}
+	params := FormatParam{
+		Value:            strconv.FormatFloat(math.Abs(value), 'f', -1, 64),
+		FractionDigits:   fractionDigit,
+		ScientificFormat: true,
+		TakeExtraDecimal: 1,
+		Shorten:          math.Abs(value) >= 100,
+	}
+
+	sign := ""
+	if value < 0 {
+		sign = "-"
+	}
+
+	num := formatDigit(params)
+
+	return fmt.Sprintf("%s$%s", sign, num)
+}
+
+func FormatTokenDigit(value float64) string {
+	params := FormatParam{
+		Value:            strconv.FormatFloat(math.Abs(value), 'f', -1, 64),
+		FractionDigits:   2,
+		Shorten:          math.Abs(value) >= 10000,
+		ScientificFormat: true,
+	}
+	sign := ""
+	if value < 0 {
+		sign = "-"
+	}
+
+	num := formatDigit(params)
+
+	return fmt.Sprintf("%s%s", sign, num)
+}
+
+func formatDigit(params FormatParam) string {
+	params.TakeExtraDecimal = int(math.Max(float64(params.TakeExtraDecimal), 0))
+	num := toNum(params.Value)
+
+	// invalid number -> keeps value the same and returns
+	if num == 0 {
+		return params.Value
+	}
+	var s string
+	if num > 1 {
+		s = strconv.FormatFloat(num, 'f', 9, 64)
+	} else {
+		s = strconv.FormatFloat(num, 'f', 18, 64)
+	}
+	parts := strings.Split(s, ".")
+	left := parts[0]
+	right := ""
+	if len(parts) > 1 {
+		right = parts[1]
+	}
+
+	numsArr := strings.Split(right, "")
+	rightStr := numsArr[0]
+
+	extraDecimal := params.TakeExtraDecimal
+	for (toNum(rightStr) == 0 || len(rightStr) < params.FractionDigits || extraDecimal > 0) && len(numsArr) > 1 {
+		if toNum(rightStr) > 0 {
+			extraDecimal--
+			extraDecimal = int(math.Max(float64(extraDecimal), 0))
+		}
+		nextDigit := numsArr[1]
+		numsArr = numsArr[1:]
+		rightStr += nextDigit
+	}
+
+	for strings.HasSuffix(rightStr, "0") {
+		rightStr = rightStr[:len(rightStr)-1]
+	}
+
+	if len(rightStr) > params.FractionDigits && strings.Count(rightStr, "0") > 0 {
+		zeroes := strings.Count(rightStr, "0")
+		if len(rightStr) >= zeroes+params.FractionDigits {
+			rightStr = rightStr[:zeroes+params.FractionDigits]
+		}
+	}
+
+	result := left
+
+	if params.FractionDigits != 0 && len(rightStr) > 0 {
+		result += "." + rightStr
+	}
+	if !params.Shorten || toNum(result) == 0 {
+		// find digit != 0
+		index := strings.IndexFunc(right, func(r rune) bool {
+			return r != '0'
+		})
+
+		digits := fmt.Sprintf("0.%s", right[:index+1])
+		if index >= 6 {
+			digits = strconv.FormatFloat(num, 'e', -1, 64)
+			return digits
+		}
+		return result
+	}
+
+	if params.ScientificFormat {
+		return shortenScientificNotation(toNum(result))
+	}
+
+	return strconv.FormatFloat(toNum(result), 'f', 1, 64)
+}
+
+func shortenScientificNotation(number float64) string {
+	// Get the power of 10 for the number
+	power := int(math.Log10(number))
+	base := number / math.Pow10((power/3)*3)
+
+	// Append the appropriate suffix (e.g., k for thousands)
+	var suffix string
+	switch power {
+	case 0, 1:
+		return strconv.FormatFloat(number, 'f', 0, 64)
+	case 2:
+		return strconv.FormatFloat(number, 'f', -1, 64)
+	case 3, 4, 5:
+		suffix = "K"
+	case 6, 7, 8:
+		suffix = "M"
+	default:
+		suffix = "B"
+	}
+
+	return strconv.FormatFloat(base, 'f', 1, 64) + suffix
+}
+
+func toNum(val interface{}) float64 {
+	str := fmt.Sprintf("%v", val)
+	str = strings.ReplaceAll(str, ",", "")
+	if num, err := strconv.ParseFloat(str, 64); err == nil {
+		return num
+	}
+	return 0
+}
