@@ -35,3 +35,12 @@ type MochiProfileTelegram struct {
 	Id               string
 	PlatformMetadata map[string]interface{}
 }
+
+type FormatParam struct {
+	Value            string
+	FractionDigits   int
+	WithoutCommas    bool
+	Shorten          bool
+	ScientificFormat bool
+	TakeExtraDecimal int
+}
