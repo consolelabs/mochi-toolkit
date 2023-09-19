@@ -18,20 +18,24 @@ type MochiProfile struct {
 type MochiProfileAccount struct {
 	Id               string
 	Platform         string
+	Avatar           string
 	PlatformMetadata map[string]interface{}
 }
 
 type MochiProfileDiscord struct {
 	Id               string
+	Avatar           string
 	PlatformMetadata map[string]interface{}
 }
 
 type MochiProfileEmail struct {
 	Id               string
+	Avatar           string
 	PlatformMetadata map[string]interface{}
 }
 
 type MochiProfileTelegram struct {
 	Id               string
+	Avatar           string
 	PlatformMetadata map[string]interface{}
 }
