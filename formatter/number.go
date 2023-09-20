@@ -49,7 +49,7 @@ func FormatNumberDecimal(number float64) string {
 func FormatTokenAmount(tokenAmount string, tokenDecimal int) string {
 	amount := ConvertBigIntString(tokenAmount, tokenDecimal)
 	amountFloat, _ := amount.Float64()
-	return FormatNumberDecimal(amountFloat)
+	return FormatTokenDigit(amountFloat)
 }
 
 func ConvertBigIntString(amount string, decimal int) *big.Float {
