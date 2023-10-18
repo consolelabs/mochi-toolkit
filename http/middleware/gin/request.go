@@ -2,7 +2,7 @@ package gin
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -33,12 +33,12 @@ func CaptureRequest(c *gin.Context, opts *CaptureRequestOptions) *typeset.AuditL
 
 	start := time.Now()
 	var body []byte
-	if c.Request.Method == "POST" || c.Request.Method == "PUT" {
+	if c.Request.Method == "POST" || c.Request.Method == "PUT" || c.Request.Method == "DELETE" {
 		// read request body and parse to string
-		body, _ = ioutil.ReadAll(c.Request.Body)
+		body, _ = io.ReadAll(c.Request.Body)
 	}
 	// Restore the io.ReadCloser to its original state
-	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 
 	w := &ResponseBodyWriter{body: &bytes.Buffer{}, ResponseWriter: c.Writer}
 	c.Writer = w
