@@ -10,6 +10,7 @@ var (
 		PlatformTelegram: "tg:",
 		PlatformApp:      "app:",
 		PlatformMochi:    "mochi:",
+		PlatformFacebook: "fb:",
 	}
 
 	usernameEmoji = map[string]string{
@@ -24,21 +25,23 @@ func Account(platform string, profileA, profileB MochiProfile) (*MochiProfileAcc
 	accountA := map[string]interface{}{
 		"telegram": profileA.Telegram,
 		"discord":  profileA.Discord,
+		"facebook": profileA.Facebook,
 	}
 
 	accountB := map[string]interface{}{
 		"telegram": profileB.Telegram,
 		"discord":  profileB.Discord,
+		"facebook": profileB.Facebook,
 	}
 
 	fallBackOrder := make([]string, 0)
 	switch platform {
 	case PlatformWeb:
-		fallBackOrder = []string{PlatformApp, PlatformDiscord, PlatformTelegram, PlatformMochi}
+		fallBackOrder = []string{PlatformApp, PlatformDiscord, PlatformTelegram, PlatformMochi, PlatformFacebook}
 	case PlatformDiscord:
-		fallBackOrder = []string{PlatformApp, PlatformDiscord, PlatformTelegram, PlatformMochi}
+		fallBackOrder = []string{PlatformApp, PlatformDiscord, PlatformTelegram, PlatformMochi, PlatformFacebook}
 	case PlatformTelegram:
-		fallBackOrder = []string{PlatformApp, PlatformTelegram, PlatformDiscord, PlatformMochi}
+		fallBackOrder = []string{PlatformApp, PlatformTelegram, PlatformDiscord, PlatformMochi, PlatformFacebook}
 	default:
 		fallBackOrder = []string{}
 	}
