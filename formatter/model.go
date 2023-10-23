@@ -6,6 +6,7 @@ const (
 	PlatformApp      = "app"
 	PlatformMochi    = "mochi"
 	PlatformWeb      = "web"
+	PlatformFacebook = "facebook"
 )
 
 type MochiProfile struct {
@@ -13,6 +14,7 @@ type MochiProfile struct {
 	Discord   *MochiProfileDiscord
 	Email     *MochiProfileEmail
 	Telegram  *MochiProfileTelegram
+	Facebook  *MochiProfileFacebook
 }
 
 type MochiProfileAccount struct {
@@ -32,6 +34,11 @@ type MochiProfileEmail struct {
 }
 
 type MochiProfileTelegram struct {
+	Id               string
+	PlatformMetadata map[string]interface{}
+}
+
+type MochiProfileFacebook struct {
 	Id               string
 	PlatformMetadata map[string]interface{}
 }
