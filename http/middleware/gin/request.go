@@ -47,6 +47,7 @@ func CaptureRequest(c *gin.Context, opts *CaptureRequestOptions) *typeset.AuditL
 	return &typeset.AuditLogMessage{
 		Type: typeset.AUDIT_LOG_MESSAGE_TYPE_API,
 		ApiLog: &typeset.AuditLogApi{
+			Host:         c.Request.Host,
 			Method:       c.Request.Method,
 			Uri:          c.Request.URL.String(),
 			RequestBody:  body,
