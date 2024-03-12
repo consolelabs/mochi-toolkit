@@ -11,7 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/params"
 )
 
-func getFirstDigitAfterDecimal(num float64) string {
+func formatFractionalDigits(num float64) string {
 	str := strconv.FormatFloat(num, 'f', -1, 64)
 
 	// Split the string into two parts: the integer part and the decimal part
@@ -20,15 +20,20 @@ func getFirstDigitAfterDecimal(num float64) string {
 		return "0"
 	}
 
-	// Retrieve the decimal part
-	decimalStr := parts[1]
+	// Retrieve the fractional part
+	fractionalStr := parts[1]
 
 	// find digit != 0
-	index := strings.IndexFunc(decimalStr, func(r rune) bool {
+	index := strings.IndexFunc(fractionalStr, func(r rune) bool {
 		return r != '0'
 	})
 
-	digits := fmt.Sprintf("0.%s", decimalStr[:index+1])
+	visibleDigits := index + 1
+	// if num has 2+ fractional digits, takes
+	if len(fractionalStr) > 1 && fractionalStr[1] != 0 {
+		visibleDigits = 2
+	}
+	digits := fmt.Sprintf("0.%s", fractionalStr[:visibleDigits])
 	if index >= 6 {
 		digits = strconv.FormatFloat(num, 'E', -1, 64)
 	}
@@ -41,7 +46,7 @@ func FormatNumberDecimal(number float64) string {
 		return fmt.Sprintf("%.2f", number)
 	}
 	if number < 1 {
-		return getFirstDigitAfterDecimal(number)
+		return formatFractionalDigits(number)
 	}
 	return fmt.Sprintf("%.0f", number)
 }
