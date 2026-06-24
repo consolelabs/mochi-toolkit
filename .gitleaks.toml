@@ -1,0 +1,14 @@
+# gitleaks config (Console Labs consolidation hardening). Extends defaults; allowlists
+# test fixtures / seed data / sample env so the CI gate fires on REAL leaks, not mock data.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "test fixtures, seed data, sample env are not real secrets"
+paths = [
+  '''.*_test\.go$''',
+  '''.*/testdata/.*''',
+  '''migrations/seed/.*''',
+  '''migrations/test_seed/.*''',
+  '''\.env\.(sample|example)$''',
+]
